@@ -1,12 +1,12 @@
 version: '3.8'
 name: template01
 services:
-  user:
+  api-gateway:
     build:
-      context: ./user
+      context: ./api-gateway-service
       dockerfile: Dockerfile
     volumes:
-      - ./user:/code  # Sync the correct directory for the user service
+      - ./api-gateway:/code  # Sync the correct directory for the user service
     depends_on:
       - postgres_db
     ports:
