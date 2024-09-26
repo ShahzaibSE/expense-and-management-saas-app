@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
 RUN pip install poetry
 
 # Copy the Poetry files to the container
-COPY pyproject.toml poetry.lock /app/
+COPY pyproject.toml poetry.lock /api-gateway/
 
 # Install dependencies using Poetry
 RUN poetry install --no-root

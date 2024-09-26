@@ -3,14 +3,16 @@ name: template01
 services:
   api-gateway:
     build:
-      context: ./api-gateway-service
+      context: ./api-gateway-service  # Updated directory for the API Gateway service
       dockerfile: Dockerfile
     volumes:
-      - ./api-gateway:/code  # Sync the correct directory for the user service
+      - ./api-gateway-service:/code  # Sync the correct directory for the API Gateway service
     depends_on:
       - postgres_db
+      - broker
+      - redis
     ports:
-      - "8085:8085"  # Expose container port 8085 to host 8085
+      - "8085:8085"  # Expose container port 8085 to host port 8085
 
   postgres_db:
     image: postgres:latest  # Use the official PostgreSQL image
@@ -56,6 +58,12 @@ services:
       DYNAMIC_CONFIG_ENABLED: "true"
     depends_on:
       - broker
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
 
 volumes:
   postgres_db:
