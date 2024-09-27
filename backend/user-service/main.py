@@ -2,6 +2,6 @@ from fastapi import FastAPI
 
 app: FastAPI = FastAPI()
 
-@app.get('/v1/')
+@app.get('/')
 def home():
     return "Welcome User"
