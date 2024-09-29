@@ -1,6 +1,8 @@
 import os
 from fastapi import FastAPI, APIRouter
 import importlib
+from pathlib import Path
+
 
 class EnvironmentManager:
     def __init__(self, app: FastAPI):
@@ -8,18 +10,19 @@ class EnvironmentManager:
         self.env = os.getenv("ENVIRONMENT", "development")  # Default to 'development'
 
     def setup_routes(self):
-        # Always load common routes
+        # Always load common routes (if available)
         self.load_routes("routes.common_routes")
 
-        # Dynamically load environment-specific routes
-        if self.env == "development":
-            self.load_routes("routes.development_routes")
-        elif self.env == "staging":
-            self.load_routes("routes.staging_routes")
-        elif self.env == "production":
-            self.load_routes("routes.production_routes")
-        else:
-            print(f"Unknown environment: {self.env}")
+        # Dynamically load all route files
+        route_files = Path("routes").glob("*.py")
+        for route_file in route_files:
+            route_module = route_file.stem  # Get the module name without .py extension
+
+            # Skip common routes and filter by environment
+            if route_module == "common_routes" or not route_module.startswith(self.env):
+                continue
+
+            self.load_routes(f"routes.{route_module}")
 
     def load_routes(self, module_path: str):
         """Dynamically load routes from the given module"""
@@ -27,7 +30,7 @@ class EnvironmentManager:
             # Dynamically import the module
             module = importlib.import_module(module_path)
             # Check if the module has a 'router' attribute
-            if hasattr(module, "router"):
+            if hasattr(module, "routes"):
                 # Include the router in the FastAPI app
                 self.app.include_router(module.router)
                 print(f"Included routes from {module_path}")

@@ -6,7 +6,7 @@ from aiocache import cached,caches
 
 limiter: Limiter = Limiter(key_func=get_remote_address)
 
-user_proxy_routes = APIRouter()
+router = APIRouter()
 
 # Setup Redis Caching
 # caches.set_config({
@@ -21,13 +21,13 @@ user_proxy_routes = APIRouter()
 #     }
 # })
 
-@user_proxy_routes.get("/user/v1/{path:path}")
+@router.get("/user/v1/{path:path}")
 @limiter.limit("2/minute")  # 5 requests per minute rate limit
 @cached(ttl=60)  # Cache response for 60 seconds
 def user_home(request:Request):
     return "Welcome User!"
 
 def setup_routes(app:FastAPI):
-    app.include_router(user_proxy_routes)
+    app.include_router(router)
 
 
