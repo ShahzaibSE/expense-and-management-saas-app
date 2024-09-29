@@ -2,6 +2,6 @@ from fastapi import FastAPI
 
 app: FastAPI = FastAPI()
 
-@app.get('/')
-def home():
-    return "Welcome User"
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8010)

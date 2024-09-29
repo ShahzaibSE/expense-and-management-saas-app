@@ -5,6 +5,8 @@ services:
     build:
       context: ./api-gateway-service  # Updated directory for the API Gateway service
       dockerfile: Dockerfile
+    environment:
+      - ENVIRONMENT=production 
     volumes:
       - ./api-gateway-service:/code  # Sync the correct directory for the API Gateway service
     depends_on:
@@ -12,7 +14,20 @@ services:
       - broker
       - redis
     ports:
-      - "8085:8085"  # Expose container port 8085 to host port 8085
+      - "8000:8000"  # Expose container port 8085 to host port 8085
+
+  user-service:
+    build:
+      context: ./user-service  # Updated directory for the API Gateway service
+      dockerfile: Dockerfile
+    volumes:
+      - ./user-service:/code  # Sync the correct directory for the API Gateway service
+    depends_on:
+      - postgres_db
+      - broker
+      - redis
+    ports:
+      - "8010:8010"  # Expose container port 8085 to host port 8085
 
   postgres_db:
     image: postgres:latest  # Use the official PostgreSQL image
