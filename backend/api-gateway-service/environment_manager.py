@@ -6,6 +6,7 @@ from pathlib import Path
 
 class EnvironmentManager:
     def __init__(self, app: FastAPI):
+        print("EnvironmentManager is running...")
         self.app = app
         self.env = os.getenv("ENVIRONMENT", "development")  # Default to 'development'
 
