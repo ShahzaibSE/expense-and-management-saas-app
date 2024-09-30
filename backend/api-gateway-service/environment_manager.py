@@ -3,7 +3,6 @@ from fastapi import FastAPI, APIRouter
 import importlib
 from pathlib import Path
 
-
 class EnvironmentManager:
     def __init__(self, app: FastAPI):
         print("EnvironmentManager is running...")
@@ -30,8 +29,9 @@ class EnvironmentManager:
         try:
             # Dynamically import the module
             module = importlib.import_module(module_path)
+            print(f"Module Path: {module}")
             # Check if the module has a 'router' attribute
-            if hasattr(module, "routes"):
+            if hasattr(module, "router"):  # Use 'router' instead of 'routes'
                 # Include the router in the FastAPI app
                 self.app.include_router(module.router)
                 print(f"Included routes from {module_path}")
