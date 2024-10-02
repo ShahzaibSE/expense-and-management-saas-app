@@ -4,6 +4,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from routes.user_service_proxy import setup_routes
 from environment_manager import EnvironmentManager
+from fastapi.middleware.cors import CORSMiddleware
 
 # print(f"Client Host: {socket.gethostname()}")
 limiter: Limiter = Limiter(key_func=lambda request: request.client.host)
@@ -14,6 +15,15 @@ app: FastAPI = FastAPI()
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(SlowAPIASGIMiddleware)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # You can specify allowed domains here (e.g., ['https://example.com'])
+    allow_credentials=True,
+    allow_methods=["*"],  # HTTP methods like 'GET', 'POST', etc. (or '*' for all)
+    allow_headers=["*"],  # Allowed headers (or '*' for all)
+)
 
 # setup_routes(app=app)
 env_manager = EnvironmentManager(app)
