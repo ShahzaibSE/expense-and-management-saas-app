@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
 from slowapi.middleware import SlowAPIASGIMiddleware
 from slowapi.errors import RateLimitExceeded
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -37,6 +37,18 @@ async def set_secure_headers(request, call_next):
     # Add security headers using the secure package
     secure.framework.fastapi(response)
     return response
+
+# Added the CSRF protection.
+@app.middleware("http")
+async def csrf_protection(request: Request, call_next):
+    if request.method in ("POST", "PUT", "DELETE"):
+        client_token = request.headers.get("X-CSRF-Token")
+        cookie_token = request.cookies.get("csrf_token")
+        
+        if not client_token or client_token != cookie_token:
+            raise HTTPException(status_code=403, detail="CSRF token missing or invalid")
+    
+    return await call_next(request)
 
 # Configure CORS
 app.add_middleware(
